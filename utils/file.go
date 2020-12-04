@@ -14,10 +14,10 @@ import (
  * @date 2020/2/20
  */
 
-func WriteFile(filename string) {
+func WriteFile(content string) {
 	//打开文件，新建文件
-	f, err := os.OpenFile("./history", os.O_RDWR|os.O_APPEND, 0666) //传递文件路径
-	if err != nil {                                                 //有错误
+	f, err := os.OpenFile("./create.sql", os.O_RDWR|os.O_APPEND|os.O_CREATE, 0666) //传递文件路径
+	if err != nil {                                                                //有错误
 		fmt.Println("err = ", err)
 		return
 	}
@@ -26,7 +26,7 @@ func WriteFile(filename string) {
 	defer f.Close()
 
 	var buf string
-	buf = fmt.Sprintf("%s\n", filename)
+	buf = fmt.Sprintf("%s\n", content)
 	_, err = f.WriteString(buf)
 	if err != nil {
 		fmt.Println("err = ", err)

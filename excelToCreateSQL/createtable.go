@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/360EntSecGroup-Skylar/excelize"
 	"log"
+	"lwq/utils"
 	"strings"
 )
 
@@ -30,7 +31,7 @@ CREATE TABLE `ACCESS_REPORT` (
 */
 
 func Start() {
-	f, err := excelize.OpenFile("./数据文件/需要订阅的数据.xlsx")
+	f, err := excelize.OpenFile("./数据文件/二期已发布共享市级部门资源目录-对接.xlsx")
 
 	if err != nil {
 		log.Fatal(err)
@@ -47,18 +48,27 @@ func Start() {
 	for i := range dataRow {
 
 		l := dataRow[i]
-		if strings.Contains(l[0], "T06024") || strings.Contains(l[0], "finish") {
+		if strings.Contains(l[0], "zhxx") || strings.Contains(l[0], "finish") {
 			if count > 0 {
-				sqlCreate += "PRIMARY KEY (`" + pri + "`) USING BTREE\n"
+				if pri != "" {
+					sqlCreate += " `zhxx_insert_time` timestamp(6) NOT NULL DEFAULT  CURRENT_TIMESTAMP(6) COMMENT '创建时间',\n"
+					sqlCreate += "PRIMARY KEY (`" + pri + "`) USING BTREE\n"
+				} else {
+					sqlCreate += " `zhxx_insert_time` timestamp(6) NOT NULL DEFAULT  CURRENT_TIMESTAMP(6) COMMENT '创建时间'\n"
+				}
+
 				sqlCreate += ") ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='" + tableComment + "';"
 				// 执行建表  直接打印建表语句即可
 				fmt.Println(sqlCreate)
+				utils.WriteFile(sqlCreate)
 				// 初始化sql
 				sqlCreate = ""
 			}
 			// tableName = l[0]
+			pri = ""
 			tableComment = l[1]
 			sqlDrop += "`" + l[0] + "`;\n"
+			sqlCreate += "DROP TABLE IF EXISTS `" + l[0] + "`;\n"
 			sqlCreate += "CREATE TABLE `" + l[0] + "`(\n"
 
 			count++
@@ -97,7 +107,7 @@ func Start() {
 }
 
 func Start1() {
-	f, err := excelize.OpenFile("./数据文件/需要订阅的数据(1).xlsx")
+	f, err := excelize.OpenFile("./数据文件/二期已发布共享市级部门资源目录-对接.xlsx.xlsx")
 
 	if err != nil {
 		log.Fatal(err)
@@ -118,7 +128,7 @@ func Start1() {
 			lasttable = l[0]
 			cname = l[1]
 		}
-		if strings.Contains(l[0], "T06024") || strings.Contains(l[0], "finish") {
+		if strings.Contains(l[0], "zhxx") || strings.Contains(l[0], "finish") {
 
 			if count > 0 {
 				st = strings.TrimRight(st, ",")

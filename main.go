@@ -378,7 +378,7 @@ func main() {
 	//
 	// fmt.Println()
 	// fmt.Println(os.Getwd())
-	excelToCreateSQL.Start1()
+	excelToCreateSQL.Start()
 	//company.StartTask()
 	//video.StartTask()
 }
